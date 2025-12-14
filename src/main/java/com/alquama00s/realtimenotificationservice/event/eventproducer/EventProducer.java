@@ -2,11 +2,13 @@ package com.alquama00s.realtimenotificationservice.event.eventproducer;
 
 import com.alquama00s.realtimenotificationservice.event.InitializationException;
 
+import java.io.Closeable;
+
 /**
  * EventProducer interface for producing events of type T.
  * @param <T> the type of events to be produced
  */
-public interface EventProducer<T> {
+public interface EventProducer<T> extends Closeable {
 
     /**
      * Produces an event of type T.
