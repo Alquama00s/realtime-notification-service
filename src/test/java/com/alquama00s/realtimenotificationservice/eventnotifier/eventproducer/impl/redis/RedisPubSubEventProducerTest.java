@@ -1,7 +1,6 @@
 package com.alquama00s.realtimenotificationservice.eventnotifier.eventproducer.impl.redis;
 
 import com.alquama00s.realtimenotificationservice.eventnotifier.InitializationException;
-import com.alquama00s.realtimenotificationservice.eventnotifier.builders.RedisPubSubNotifierBuilder;
 import com.alquama00s.realtimenotificationservice.eventnotifier.eventproducer.ProducerException;
 import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.JSONCodec;
 import io.lettuce.core.RedisClient;
@@ -30,11 +29,11 @@ class RedisPubSubEventProducerTest {
     }
 
     private RedisPubSubEventProducer<String> getProducer() throws InitializationException {
-        return RedisPubSubEventProducer.<String>builder()
+        return (RedisPubSubEventProducer<String>) RedisPubSubEventProducer.<String>builder()
                 .client(client)
                 .redisCodec(new JSONCodec<>(String.class))
                 .channel("chan")
-                .buildProducer();
+                .build();
     }
 
     @Test

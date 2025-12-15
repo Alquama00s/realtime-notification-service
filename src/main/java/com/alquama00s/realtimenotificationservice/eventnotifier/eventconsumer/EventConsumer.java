@@ -1,6 +1,7 @@
 package com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer;
 
 import com.alquama00s.realtimenotificationservice.eventnotifier.InitializationException;
+import com.alquama00s.realtimenotificationservice.eventnotifier.builders.RedisComponent;
 
 import java.io.Closeable;
 import java.util.Iterator;
@@ -21,13 +22,6 @@ public interface EventConsumer<T> extends Iterator<T>, Closeable {
      */
     void setConsumer(Consumer<T> consumer);
 
-    /**
-     * Initializes the consumer with the given consumer group ID and channel.
-     * @param consumerGroupId the consumer group ID
-     * @param channel the channel to consume events from
-     * @throws InitializationException if there is an error while initializing the consumer
-     */
-    void init(String consumerGroupId,String channel)throws InitializationException;
 
 }
 
