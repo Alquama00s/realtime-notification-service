@@ -1,7 +1,5 @@
 package com.alquama00s.realtimenotificationservice.eventnotifier.builders;
 
-import com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.impl.redis.RedisPubSubEventConsumer;
-import com.alquama00s.realtimenotificationservice.eventnotifier.eventproducer.impl.redis.RedisPubSubEventProducer;
 import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.JSONCodec;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.codec.RedisCodec;

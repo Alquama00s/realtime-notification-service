@@ -1,12 +1,11 @@
-package com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.impl.redis;
+package com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.impl.redis.redis;
 
 import com.alquama00s.realtimenotificationservice.eventnotifier.InitializationException;
 import com.alquama00s.realtimenotificationservice.eventnotifier.builders.AbstractRedisComponentBuilder;
 import com.alquama00s.realtimenotificationservice.eventnotifier.builders.RedisComponent;
 import com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.EventConsumer;
+import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.JSONCodec;
 import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
@@ -14,10 +13,8 @@ import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
@@ -88,6 +85,8 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T>,RedisCompon
 
         @Override
         public RedisComponent build() {
+            if(client==null)
+                client=RedisClient.create(host+":"+port);
             return new RedisPubSubEventConsumer<T>(channel,redisCodec,client);
         }
         public RedisPubSubEventConsumer<T> buildConsumer() {
