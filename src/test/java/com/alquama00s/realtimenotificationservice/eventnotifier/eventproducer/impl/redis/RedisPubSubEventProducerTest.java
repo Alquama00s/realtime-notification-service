@@ -48,7 +48,7 @@ class RedisPubSubEventProducerTest {
     void initIsIdempotent() throws InitializationException {
         RedisPubSubEventProducer<String> producer = getProducer();
         // second init should be no-op
-        producer.init("chan");
+        producer.init();
         verify(client, times(1)).connect(any(RedisCodec.class));
     }
 

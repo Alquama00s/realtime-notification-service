@@ -7,7 +7,7 @@ import com.alquama00s.realtimenotificationservice.eventnotifier.InitializationEx
  * this interface serves as a marker interface for redis components
  * this is used in the RedisComponentBuilder class
  * **/
-public interface RedisComponent<T> {
+public interface RedisComponent {
     /**
      * Initializes the consumer with the given consumer group ID and channel.
      * @throws InitializationException if there is an error while initializing the consumer

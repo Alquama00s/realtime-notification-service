@@ -50,7 +50,7 @@ public abstract class AbstractRedisComponentBuilder<T> {
         return this;
     }
 
-    public abstract RedisComponent<T> build();
+    public abstract RedisComponent build();
 
 //    {
 //        if(client==null)

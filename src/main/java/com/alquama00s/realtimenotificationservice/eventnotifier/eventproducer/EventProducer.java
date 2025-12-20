@@ -17,10 +17,4 @@ public interface EventProducer<T> extends Closeable {
      */
     public void produce(T event)throws ProducerException;
 
-    /**
-     * Initializes the producer with the given channel.
-     * @param channel the channel to produce events to
-     * @throws InitializationException if there is an error while initializing the producer
-     */
-    public void init(String channel)throws InitializationException;
 }

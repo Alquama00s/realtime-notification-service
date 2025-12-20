@@ -9,11 +9,12 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 import java.io.IOException;
 
 
-public class RedisPubSubEventProducer<T> implements EventProducer<T>, RedisComponent<T> {
+public class RedisPubSubEventProducer<T> implements EventProducer<T>, RedisComponent {
 
     private final RedisClient client;
     private StatefulRedisConnection<String,T> connection;
@@ -26,7 +27,7 @@ public class RedisPubSubEventProducer<T> implements EventProducer<T>, RedisCompo
         this.client = client;
         this.redisCodec= redisCodec;
         this.channel= channel;
-        init(channel);
+        init();
     }
 
     public static <T> RedisPubSubEventProducerBuilder<T> builder(){
@@ -40,7 +41,7 @@ public class RedisPubSubEventProducer<T> implements EventProducer<T>, RedisCompo
     }
 
     @Override
-    public void init(String channel) throws InitializationException {
+    public void init() throws InitializationException {
         if(initialized) return;
         this.connection = client.connect(redisCodec);
         this.commands = this.connection.sync();
@@ -58,10 +59,16 @@ public class RedisPubSubEventProducer<T> implements EventProducer<T>, RedisCompo
 
     public static class RedisPubSubEventProducerBuilder<T> extends AbstractRedisComponentBuilder<T> {
         @Override
-        public RedisComponent<T> build() {
+        public RedisComponent build() {
             if(client==null)
                 client = RedisClient.create(host+":"+port);
-            return new RedisPubSubEventProducer<>(channel,redisCodec,client);
+            return new RedisPubSubEventProducer<T>(channel,redisCodec,client);
+        }
+
+        public RedisPubSubEventProducer<T> buildProducer() {
+            if(client==null)
+                client = RedisClient.create(host+":"+port);
+            return new RedisPubSubEventProducer<T>(channel,redisCodec,client);
         }
     }
 
