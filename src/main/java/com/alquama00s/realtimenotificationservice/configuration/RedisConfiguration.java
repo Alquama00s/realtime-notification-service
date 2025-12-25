@@ -26,6 +26,7 @@ public class RedisConfiguration {
     @Bean
     public RedisPubSubEventProducer redisPubSubEventProducer(RedisClient client){
         return RedisPubSubEventProducer.builder()
+                .channel("default-channel")
                 .client(client)
                 .build();
     }
