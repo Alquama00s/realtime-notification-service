@@ -14,10 +14,10 @@ public class RootAdviceTest {
 
     @Test
     void testDoesNotThrows(){
-        var se = rootAdvice.handleError(new Exception("Test exception"));
+        var se = rootAdvice.handleError(new Exception("Test exception")).getBody();
         Assertions.assertNotNull(se.getMessage());
         Assertions.assertNotNull(se.getReference());
-        Assertions.assertNotNull(se.getTs());
+        Assertions.assertNotNull(se.getTimestamp());
         var serialized = om.writeValueAsString(se);
         log.info("serialized: {}",serialized);
     }
