@@ -18,12 +18,18 @@ public class JSONCodec<T> implements RedisCodec<String,T> {
 
     @Override
     public String decodeKey(ByteBuffer bytes) {
-        return new String(bytes.array(),StandardCharsets.UTF_8);
+        if(bytes==null)return null;
+        byte[] tempBytes = new byte[bytes.capacity()];
+        bytes.get(tempBytes);
+        return new String(tempBytes,StandardCharsets.UTF_8);
     }
 
     @Override
     public T decodeValue(ByteBuffer bytes) {
-        return om.readValue(bytes.array(),clazz);
+        if(bytes==null)return null;
+        byte[] tempByte = new byte[bytes.capacity()];
+        bytes.get(tempByte);
+        return om.readValue(tempByte,clazz);
     }
 
     @Override

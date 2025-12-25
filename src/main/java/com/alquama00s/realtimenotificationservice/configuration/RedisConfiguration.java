@@ -32,7 +32,7 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisPubSubEventConsumerFactory eventConsumerFactory(RedisClient client){
+    public DefaultRedisPubSubEventConsumerFactory eventConsumerFactory(RedisClient client){
         return new DefaultRedisPubSubEventConsumerFactory(client,"default-channel");
     }
 

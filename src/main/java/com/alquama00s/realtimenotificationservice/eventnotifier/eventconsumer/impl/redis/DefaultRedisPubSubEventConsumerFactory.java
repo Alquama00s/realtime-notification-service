@@ -20,7 +20,6 @@ public class DefaultRedisPubSubEventConsumerFactory extends RedisPubSubEventCons
         return RedisPubSubEventConsumer.<T>builder()
                 .clazz(clazz)
                 .channel(channel)
-                .redisCodec(new JSONCodec<>(clazz))
                 .client(client)
                 .build();
 

@@ -1,8 +1,10 @@
 package com.alquama00s.realtimenotificationservice.eventnotifier.builders;
 
+import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.CustomStringCodec;
 import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.JSONCodec;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.codec.StringCodec;
 
 
 /**
@@ -35,7 +37,11 @@ public class RedisComponentBuilder<T,K extends RedisComponentBuilder<T,K>> {
     }
 
     public K clazz(Class<T> clazz){
-        this.redisCodec= new JSONCodec<T>(clazz);
+        if(clazz==String.class){
+            this.redisCodec=(RedisCodec<String,T>)new CustomStringCodec();
+        }else{
+            this.redisCodec= new JSONCodec<T>(clazz);
+        }
         return (K)this;
     }
 
