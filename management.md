@@ -10,6 +10,7 @@ A minimal checklist of features and tasks for the **Real-Time Notification Broad
 ### 🔧 Core Backend
 
 * [ ] ⚙️ Spring Boot project setup
+* [ ] redis/valkey integration
 * [ ] 📡 WebSocket endpoint (`/ws/notifications`)
 * [ ] 🚀 REST API to publish events (`POST /api/events`)
 * [ ] 🔁 Redis Pub/Sub integration
@@ -59,6 +60,7 @@ A minimal checklist of features and tasks for the **Real-Time Notification Broad
 
 Use this checklist to track project progress.
 Keep the project small, focused, and easy to demo.
+docker run -d --name redis -p 6379:6379 redis:7
 
 ---
 
