@@ -31,7 +31,6 @@ public class RedisPubSubEventConsumerFactory {
         return RedisPubSubEventConsumer.<T>builder()
                 .clazz(clazz)
                 .channel(channel)
-                .redisCodec(new JSONCodec<>(clazz))
                 .client(client)
                 .build();
 

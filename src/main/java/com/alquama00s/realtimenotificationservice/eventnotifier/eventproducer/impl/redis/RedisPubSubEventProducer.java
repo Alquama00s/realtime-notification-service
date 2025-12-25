@@ -41,6 +41,12 @@ public class RedisPubSubEventProducer implements EventProducer<Object> {
     }
 
 
+    public void produce(String chan,Object event) throws ProducerException {
+        if(!initialized) throw new ProducerException("Not initialized");
+        commands.publish(chan,event);
+    }
+
+
     public void init() throws InitializationException {
         if(initialized) return;
         this.connection = client.connect(redisCodec);

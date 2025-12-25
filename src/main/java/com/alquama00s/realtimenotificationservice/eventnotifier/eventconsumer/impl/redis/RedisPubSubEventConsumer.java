@@ -27,7 +27,7 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T> {
     private boolean initialized = false;
     private final String channel;
     private final List<Consumer<T>> consumers = new ArrayList<>();
-    private final LinkedBlockingQueue<T> msqQueue= new LinkedBlockingQueue<>();
+    private RedisPubSubListener<String,T>  listener;
 
     private RedisPubSubEventConsumer(String channel, RedisCodec<String, T> redisCodec, RedisClient client) {
         this.client = client;
@@ -50,7 +50,8 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T> {
         if(initialized) return;
         this.connection = client.connectPubSub(redisCodec);
         this.commands = this.connection.sync();
-        connection.addListener(createListener());
+        listener=createListener();
+        connection.addListener(listener);
         commands.subscribe(channel);
         initialized=true;
     }
@@ -58,26 +59,13 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T> {
     @Override
     public void close() throws IOException {
         if(!initialized) return;
+        connection.removeListener(listener);
         connection.close();
         this.connection =null;
         this.commands=null;
+        consumers.clear();
         initialized=false;
     }
-
-//    @Override
-//    public boolean hasNext() {
-//        return true;
-//    }
-//
-//    @Override
-//    public T next() {
-//        try {
-//            return msqQueue.take();
-//        } catch (InterruptedException e) {
-//            log.error("thread interrupted while polling");
-//        }
-//        return null;
-//    }
 
     public static class RedisPubSubEventConsumerBuilder<T> extends RedisComponentBuilder<T,RedisPubSubEventConsumerBuilder<T>> {
 
@@ -93,7 +81,6 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T> {
             @Override
             public void message(String channel, T message) {
                 log.info("Received message: {} from channel: {}", message, channel);
-                msqQueue.add(message);
                 for(Consumer<T> consumer: consumers){
                     consumer.accept(message);
                 }

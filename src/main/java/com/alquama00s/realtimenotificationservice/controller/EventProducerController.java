@@ -6,10 +6,7 @@ import com.alquama00s.realtimenotificationservice.DTO.Event;
 import com.alquama00s.realtimenotificationservice.service.EventProducerService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -21,6 +18,11 @@ public class EventProducerController {
     @PostMapping("/produce")
     public Event produce(@RequestBody Event event) throws ProducerException {
         return eventProducerService.produce(event);
+    }
+
+    @PostMapping("/produce/{channelName}")
+    public Event produceAtChannel(@RequestBody Event event, @PathVariable String channelName) throws ProducerException {
+        return eventProducerService.produce(channelName,event);
     }
 
 

@@ -16,7 +16,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(eventPollWebSocketController,"/ws/events/poll")
+        registry.addHandler(eventPollWebSocketController,EventPollWebSocketController.uri,EventPollWebSocketController.uri+"/*")
                 .setAllowedOrigins("*");
     }
 }

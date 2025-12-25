@@ -19,5 +19,9 @@ public class EventProducerService {
         return e;
     }
 
+    public Event produce(String chan,Event e) throws ProducerException {
+        eventProducer.produce(chan,e);
+        return e;
+    }
 
 }
