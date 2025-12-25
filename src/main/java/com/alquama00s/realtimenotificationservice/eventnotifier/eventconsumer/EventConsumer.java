@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * this extends Iterator and Closeable interfaces.
  * @param <T> the type of events to be consumed
  */
-public interface EventConsumer<T> extends Iterator<T>, Closeable {
+public interface EventConsumer<T> extends Closeable {
 
     /**
      * Sets the consumer function to process the consumed events.

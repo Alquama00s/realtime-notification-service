@@ -28,17 +28,16 @@ class RedisPubSubEventProducerTest {
         when(connection.sync()).thenReturn(commands);
     }
 
-    private RedisPubSubEventProducer<String> getProducer() throws InitializationException {
-        return (RedisPubSubEventProducer<String>) RedisPubSubEventProducer.<String>builder()
+    private RedisPubSubEventProducer getProducer() throws InitializationException {
+        return RedisPubSubEventProducer.builder()
                 .client(client)
-                .redisCodec(new JSONCodec<>(String.class))
                 .channel("chan")
                 .build();
     }
 
     @Test
     void publishDelegatesToCommands() throws InitializationException, ProducerException {
-        RedisPubSubEventProducer<String> producer = getProducer();
+        RedisPubSubEventProducer producer = getProducer();
         // produce should call commands.publish
         producer.produce("hello");
         verify(commands, times(1)).publish("chan", "hello");
@@ -46,7 +45,7 @@ class RedisPubSubEventProducerTest {
 
     @Test
     void initIsIdempotent() throws InitializationException {
-        RedisPubSubEventProducer<String> producer = getProducer();
+        RedisPubSubEventProducer producer = getProducer();
         // second init should be no-op
         producer.init();
         verify(client, times(1)).connect(any(RedisCodec.class));
@@ -54,7 +53,7 @@ class RedisPubSubEventProducerTest {
 
     @Test
     void closeIsIdempotent() throws Exception {
-        RedisPubSubEventProducer<String> producer = getProducer();
+        RedisPubSubEventProducer producer = getProducer();
         producer.close();
         producer.close();
         verify(connection, times(1)).close();
@@ -62,7 +61,7 @@ class RedisPubSubEventProducerTest {
 
     @Test
     void publishAfterCloseThrowsOrNoop() throws Exception {
-        RedisPubSubEventProducer<String> producer = getProducer();
+        RedisPubSubEventProducer producer = getProducer();
         producer.close();
         // depending on implementation, produce may NPE or do nothing; assert that it does not call commands.publish again
         try {

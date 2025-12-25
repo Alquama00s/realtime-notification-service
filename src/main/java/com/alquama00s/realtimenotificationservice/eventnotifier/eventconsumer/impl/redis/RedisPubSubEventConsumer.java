@@ -1,10 +1,9 @@
-package com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.impl.redis.redis;
+package com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.impl.redis;
 
 import com.alquama00s.realtimenotificationservice.eventnotifier.InitializationException;
-import com.alquama00s.realtimenotificationservice.eventnotifier.builders.AbstractRedisComponentBuilder;
+import com.alquama00s.realtimenotificationservice.eventnotifier.builders.RedisComponentBuilder;
 import com.alquama00s.realtimenotificationservice.eventnotifier.builders.RedisComponent;
 import com.alquama00s.realtimenotificationservice.eventnotifier.eventconsumer.EventConsumer;
-import com.alquama00s.realtimenotificationservice.eventnotifier.rediscodecs.JSONCodec;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.RedisPubSubListener;
@@ -19,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 @Slf4j
-public class RedisPubSubEventConsumer<T> implements EventConsumer<T>,RedisComponent {
+public class RedisPubSubEventConsumer<T> implements EventConsumer<T> {
 
     private final RedisClient client;
     private StatefulRedisPubSubConnection<String,T> connection;
@@ -47,7 +46,6 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T>,RedisCompon
         this.consumers.add(consumer);
     }
 
-    @Override
     public void init() throws InitializationException {
         if(initialized) return;
         this.connection = client.connectPubSub(redisCodec);
@@ -66,34 +64,28 @@ public class RedisPubSubEventConsumer<T> implements EventConsumer<T>,RedisCompon
         initialized=false;
     }
 
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
+//    @Override
+//    public boolean hasNext() {
+//        return true;
+//    }
+//
+//    @Override
+//    public T next() {
+//        try {
+//            return msqQueue.take();
+//        } catch (InterruptedException e) {
+//            log.error("thread interrupted while polling");
+//        }
+//        return null;
+//    }
 
-    @Override
-    public T next() {
-        try {
-            return msqQueue.take();
-        } catch (InterruptedException e) {
-            log.error("thread interrupted while polling");
-        }
-        return null;
-    }
+    public static class RedisPubSubEventConsumerBuilder<T> extends RedisComponentBuilder<T,RedisPubSubEventConsumerBuilder<T>> {
 
-    public static class RedisPubSubEventConsumerBuilder<T> extends AbstractRedisComponentBuilder<T> {
-
-        @Override
-        public RedisComponent build() {
+        public RedisPubSubEventConsumer<T> build() {
             if(client==null)
                 client=RedisClient.create(host+":"+port);
             return new RedisPubSubEventConsumer<T>(channel,redisCodec,client);
         }
-        public RedisPubSubEventConsumer<T> buildConsumer() {
-            return new RedisPubSubEventConsumer<T>(channel,redisCodec,client);
-        }
-
-
     }
 
     private RedisPubSubListener<String,T> createListener(){
