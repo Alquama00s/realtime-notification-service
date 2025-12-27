@@ -10,16 +10,14 @@ Ideal for use cases like:
 
 - Live status updates
     
-- ITSM ticketing notifications
+- Notifications
     
 - Chat/message delivery
     
 - Workflow progress updates
     
 - E-commerce order status events
-    
-- Monitoring & DevOps alerts
-    
+        
 
 ---
 
@@ -41,14 +39,6 @@ Clients subscribe to a live WebSocket channel to receive notifications as they o
 
 Multiple instances of the service can publish/receive events using Redis as the event bus.
 
-### 💾 **Optional Persistence (PostgreSQL)**
-
-Store notifications for offline users or fetch history.
-
-### 👥 **Client Presence Tracking**
-
-Track online/offline users in Redis for optimized broadcasting.
-
 ### 🐳 **Dockerized Setup**
 
 Run the entire stack (service + Redis + DB + UI) with a single command using Docker Compose.
@@ -63,32 +53,33 @@ Includes optional manifests for running in a distributed cluster.
 
 ```
                 ┌───────────────────────┐
-                │   Event Producer(s)    │
-                │ (Any microservice/API) │
+                │   Event Producer(s)   │
+                │ (Any microservice/API)│
                 └───────────┬───────────┘
-                            │ POST /api/events
+                            │ POST /api/v1/events/produce/{channel}
                             ▼
                 ┌────────────────────────────┐
-                │ Real-Time Notification      │
-                │  Broadcasting Service       │
-                │  (Spring Boot)              │
+                │ Real-Time Notification     │
+                │  Broadcasting Service      │
+                │  (Spring Boot)             │
                 └───────────┬────────────────┘
                             │ Publish
                             ▼
                 ┌────────────────────────────┐
-                │         Redis Pub/Sub       │
+                │         Redis Pub/Sub      │
                 └───────────┬────────────────┘
                             │ Fan-out
                             ▼
                 ┌────────────────────────────┐
-                │  All Notification Service   │
-                │     Instances (scaled)      │
+                │  All Notification Service  │
+                │     Instances (scaled)     │
                 └───────────┬────────────────┘
-                            │ WebSocket Push
+                            │ WebSocket Push 
+                            | WebSocket /ws/events/poll/{channel}
                             ▼
                 ┌────────────────────────────┐
-                │   Connected Clients (UI)    │
-                │ Angular / Web / Mobile      │
+                │   Connected Clients (UI)   │
+                │ Angular / Web / Mobile     │
                 └────────────────────────────┘
 ```
 
@@ -98,19 +89,16 @@ Includes optional manifests for running in a distributed cluster.
 
 |Component|Technology|
 |---|---|
-|Backend|Spring Boot 3, Java 17|
+|Backend|Spring Boot 4, Java 21|
 |Real-time|WebSockets|
 |Messaging|Redis (pub/sub)|
-|Database (optional)|PostgreSQL|
-|Frontend (example)|Angular|
 |Deployment|Docker, Docker Compose|
-|Scaling (optional)|Kubernetes|
 
 ---
 
 # 📥 API Endpoints
 
-## **POST /api/events**
+## **POST /api/v1/events/produce/{channel}**
 
 Publish a new event into the system.
 
@@ -118,13 +106,7 @@ Publish a new event into the system.
 
 ```json
 {
-  "type": "ORDER_PLACED",
-  "target": "user123",
   "message": "Order #87521 placed successfully",
-  "metadata": {
-    "priority": "HIGH",
-    "timestamp": "2025-01-10T10:15:30"
-  }
 }
 ```
 
@@ -143,38 +125,18 @@ Publish a new event into the system.
 ### Connect to:
 
 ```
-ws://localhost:8080/ws/notifications
+ws://localhost:8080/ws/events/poll/{channel}
 ```
 
 ### Incoming message example:
 
 ```json
 {
-  "eventId": "e1739ab2",
-  "type": "ORDER_PLACED",
   "message": "Order #87521 placed successfully",
-  "timestamp": "2025-01-10T10:15:30"
 }
 ```
 
 Clients will receive a live push whenever any producer publishes an event.
-
----
-
-# 🗄️ Database Schema (Optional Persistence)
-
-Table: **notifications**
-
-|Column|Type|Description|
-|---|---|---|
-|id|UUID|Notification ID|
-|target_user|varchar|Recipient|
-|type|varchar|Event type|
-|message|text|Notification text|
-|created_at|timestamp|Timestamp|
-|read|boolean|Read/unread status|
-
-You can include message history or offline sync using this table.
 
 ---
 
@@ -206,43 +168,32 @@ http://localhost:8080
 WebSocket at:
 
 ```
-ws://localhost:8080/ws/notifications
+ws://localhost:8080/ws/events/poll/{channel}
 ```
 
 ---
 
 # 🧪 How to Test
 
-### **1. Open two browser tabs**
-
-Both connect to WebSocket endpoint.
-
 ### **2. Send event using Postman**
 
-POST → `http://localhost:8080/api/events`
-
+POST → `http://localhost:8080/api/v1/events/produce/{channel}
 ```json
 {
-  "type": "TICKET_UPDATED",
   "message": "SLA breached for ticket #5521"
 }
 ```
+Websocket → ws://localhost:8080/ws/notifications
 
-### **3. Both browser tabs instantly receive the notification**
-
-Shows fan-out & broadcasting.
-
-### **4. Start multiple backend instances**
-
-Redis ensures events broadcast across all nodes.
-
+```json
+{
+  "message": "SLA breached for ticket #5521"
+}
+```
 ---
 
 # 📚 Use Cases
 
-- Live ITSM ticket alerts
-    
-- Real-time dashboards (DevOps, analytics)
     
 - E-commerce order tracking
     
@@ -254,68 +205,3 @@ Redis ensures events broadcast across all nodes.
     
 
 ---
-
-# 🧩 Folder Structure
-
-```
-real-time-notification-service/
- ├── src/
- ├── docker/
- ├── k8s/
- ├── README.md
- ├── docker-compose.yml
- └── ui-client/ (optional Angular client)
-```
-
----
-
-# 🔮 Future Enhancements
-
-- User-specific channels & subscriptions
-    
-- Group/event-topic channels
-    
-- Offline notifications & fetch APIs
-    
-- Priority-based delivery
-    
-- Rate limiting & throttling
-    
-- Message retries
-    
-- Kafka integration for durable event ingestion
-    
-- Role-based notification routing
-    
-- Push notifications for mobile clients
-    
-
----
-
-# 🏆 Author
-
-**Alquama Salim**
-
-- GitHub: [https://github.com/alquama00s](https://github.com/alquama00s)
-    
-- LinkedIn: [https://linkedin.com/in/alquama00s](https://linkedin.com/in/alquama00s)
-    
-
----
-
-# 🎉 Final Note
-
-This service demonstrates:
-
-- Real-time system design
-    
-- Pub/sub event-driven architecture
-    
-- Low-latency fan-out
-    
-- Horizontal scalability
-    
-- Practical DevOps deployment
-    
-
-It’s a perfect project to showcase **backend engineering + distributed systems knowledge** in your résumé.
