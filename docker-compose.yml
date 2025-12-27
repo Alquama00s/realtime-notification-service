@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - notification-app-network
+
+  realtime-notification-service-template: &service-template
+    build: .
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - notification-app-network
+
+  realtime-notification-service:
+    <<: *service-template
+    ports:
+      - "8081:8081"
+
+  realtime-notification-service-2:
+    <<: *service-template
+    ports:
+      - "8082:8081"
+
+volumes:
+  redis_data:
+
+networks:
+  notification-app-network:
